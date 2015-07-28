@@ -8,12 +8,59 @@
             cacheLifetime: 3600 // in seconds
         };
 
+        /* PRIVATE METHODS */
+
+        /**
+         * Tries to create XMLHttpRequest instance or Microsoft.XMLHTTP if it runs on older IE
+         * @returns {object} XMLHttpRequest or Microsoft.XMLHTTP
+         * @private
+         */
+        function _createHttpRequest() {
+            var httpRequest = false;
+
+            if (typeof ActiveXObject !== 'undefined') {
+                try {
+                    httpRequest = new ActiveXObject('Microsoft.XMLHTTP');
+                    return httpRequest;
+                } catch(e) {
+                    httpRequest = false;
+                }
+            }
+
+            try {
+                httpRequest = new XMLHttpRequest();
+                return httpRequest;
+            } catch(e) { }
+            return null;
+        }
+
+        /**
+         * Checks if browser supports local storage
+         * @returns {boolean} True if browser supports local storage
+         * @private
+         */
+        function _supportsHtml5Storage() {
+            try {
+                return 'localStorage' in window && window.localStorage !== null;
+            } catch (e) {
+                return false;
+            }
+        }
+
         /* PUBLIC METHODS */
 
+        /**
+         * Get options object
+         * @returns Options object
+         */
         this.getOptions = function () {
             return this.options;
         };
 
+        /**
+         * Set new options
+         * @param customOptions
+         */
         this.setOptions = function (customOptions) {
             if (typeof customOptions !== 'undefined' && typeof customOptions === 'object') {
                 this.options = customOptions;
@@ -80,45 +127,6 @@
 
             return true;
         };
-
-        /* PRIVATE METHODS */
-
-        /**
-         * Tries to create XMLHttpRequest instance or Microsoft.XMLHTTP if it runs on older IE
-         * @returns {object} XMLHttpRequest or Microsoft.XMLHTTP
-         * @private
-         */
-        function _createHttpRequest() {
-            var httpRequest = false;
-
-            if (typeof ActiveXObject !== 'undefined') {
-                try {
-                    httpRequest = new ActiveXObject('Microsoft.XMLHTTP');
-                    return httpRequest;
-                } catch(e) {
-                    httpRequest = false;
-                }
-            }
-
-            try {
-                httpRequest = new XMLHttpRequest();
-                return httpRequest;
-            } catch(e) { }
-            return null;
-        }
-
-        /**
-         * Checks if browser supports local storage
-         * @returns {boolean} True if browser supports local storage
-         * @private
-         */
-        function _supportsHtml5Storage() {
-            try {
-                return 'localStorage' in window && window.localStorage !== null;
-            } catch (e) {
-                return false;
-            }
-        }
 
     }();
 
