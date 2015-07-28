@@ -22,6 +22,14 @@ describe('easyPack Tests', function () {
             expect(easyPack.getList()).should.be.an('object');
         });
 
+        it('should has loadFromCache method', function () {
+            expect(easyPack.loadFromCache()).should.be.an('object');
+        });
+
+        it('should has saveToCache method', function () {
+            expect(easyPack.saveToCache()).should.be.an('object');
+        });
+
     });
 
     describe('options', function () {
@@ -51,6 +59,54 @@ describe('easyPack Tests', function () {
 
     });
 
+    describe('cache system', function () {
+
+        var timeObject = new Date();
+        timeObject.setSeconds(timeObject.getSeconds() + 3600);
+
+        var validJson = {
+            'total_count': '1234',
+            'expire': timeObject.getTime(),
+            '_embedded': {
+                'machines' : []
+            },
+        };
+
+        var validJsonNoExpire = {
+            'total_count': '1234',
+            '_embedded': {
+                'machines' : []
+            },
+        };
+
+        it('should not load data from cache', function () {
+            localStorage.clear();
+            expect(easyPack.loadFromCache()).to.deep.equal(null);
+        });
+
+        it('should load data from cache', function () {
+            localStorage.setItem("easyPackCache", JSON.stringify(validJson));
+            expect(easyPack.loadFromCache()).to.not.deep.equal(null);
+        });
+
+        it('should save data to cache', function () {
+            localStorage.clear();
+            easyPack.saveToCache(validJsonNoExpire);
+            expect(easyPack.loadFromCache()).to.not.deep.equal(null);
+        });
+
+        it('should data from cache be valid json', function () {
+            var json = easyPack.loadFromCache();
+
+            expect(json).to.has.property('total_count');
+            expect(json).to.has.property('expire');
+            expect(json).to.has.property('_embedded');
+            expect(json._embedded).to.has.property('machines');
+            expect(json._embedded.machines).to.be.an('array');
+        });
+
+    });
+
     describe('retrieve list of machines', function () {
 
         var json;
@@ -76,6 +132,20 @@ describe('easyPack Tests', function () {
         });
 
         it('should has _embedded.machines property as an array', function () {
+            expect(json._embedded.machines).to.be.an('array');
+        });
+
+        it('should save json data to cache', function () {
+            easyPack.saveToCache(json);
+        });
+
+        it('should load json data from cache', function () {
+            var json = easyPack.loadFromCache();
+
+            expect(json).to.has.property('total_count');
+            expect(json).to.has.property('expire');
+            expect(json).to.has.property('_embedded');
+            expect(json._embedded).to.has.property('machines');
             expect(json._embedded.machines).to.be.an('array');
         });
 

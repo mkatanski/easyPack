@@ -40,6 +40,47 @@
             httpRequest.send();
         };
 
+        /**
+         * Load data from cache
+         * @returns {object} json object
+         */
+        this.loadFromCache = function () {
+            var timeObject = new Date();
+            if (!_supportsHtml5Storage()) {
+                return null;
+            }
+
+            var jsonString = localStorage.getItem('easyPackCache');
+            if (jsonString === null) {
+                return null;
+            }
+
+            var json = JSON.parse(jsonString);
+            if (parseInt(json.expire) > timeObject.getTime()) {
+                return json;
+            }
+            return null;
+        };
+
+        /**
+         * Save json object to local storage. It also creates expiration time based on current settings.
+         * @param data json object with list of machines
+         * @returns {boolean} True if data was saved in local storage
+         */
+        this.saveToCache = function (data) {
+            if (!_supportsHtml5Storage() || typeof data === 'undefined') {
+                return false;
+            }
+
+            var timeObject = new Date();
+            timeObject.setSeconds(timeObject.getSeconds() + this.options.cacheLifetime);
+            data.expire = timeObject.getTime();
+
+            localStorage.setItem('easyPackCache', JSON.stringify(data));
+
+            return true;
+        };
+
         /* PRIVATE METHODS */
 
         /**
@@ -64,6 +105,19 @@
                 return httpRequest;
             } catch(e) { }
             return null;
+        }
+
+        /**
+         * Checks if browser supports local storage
+         * @returns {boolean} True if browser supports local storage
+         * @private
+         */
+        function _supportsHtml5Storage() {
+            try {
+                return 'localStorage' in window && window.localStorage !== null;
+            } catch (e) {
+                return false;
+            }
         }
 
     }();
