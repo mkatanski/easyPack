@@ -18,6 +18,10 @@ describe('easyPack Tests', function () {
             expect(easyPack.getOptions()).should.be.an('object');
         });
 
+        it('should has getList method', function () {
+            expect(easyPack.getList()).should.be.an('object');
+        });
+
     });
 
     describe('options', function () {
@@ -43,6 +47,36 @@ describe('easyPack Tests', function () {
         it('should has custom options', function () {
             easyPack.setOptions(customOptions);
             expect(easyPack.getOptions()).to.deep.equal(customOptions);
+        });
+
+    });
+
+    describe('retrieve list of machines', function () {
+
+        var json;
+
+        before(function(done){
+            this.timeout(10000);
+            easyPack.getList(function (data){
+                json = data;
+                done();
+            });
+        });
+
+        it('should get json object with total_count property', function () {
+            expect(json).to.has.property('total_count');
+        });
+
+        it('should get json object with _embedded property', function () {
+            expect(json).to.has.property('_embedded');
+        });
+
+        it('should get json object with _embedded.machines property', function () {
+            expect(json._embedded).to.has.property('machines');
+        });
+
+        it('should has _embedded.machines property as an array', function () {
+            expect(json._embedded.machines).to.be.an('array');
         });
 
     });
