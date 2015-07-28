@@ -158,9 +158,9 @@
          */
         this.ListWidget = function (elementId) {
             console.log('Widget Initialize');
-            var widget = document.getElementById(elementId),
-                selectList = document.createElement('select'),
-                loader = document.createElement('p');
+            var widget = window.document.getElementById(elementId),
+                selectList = window.document.createElement('select'),
+                loader = window.document.createElement('p');
 
             loader.innerHTML = 'loading...';
             widget.appendChild(loader);
@@ -168,9 +168,8 @@
             selectList.id = 'easyPack-listwidget--' + elementId;
             selectList.style.width = '100%';
 
-            if (_machinesCache === null) {
-                this.loadFromCache();
-            }
+            // Try to load machines from cache first
+            if (_machinesCache === null) { this.loadFromCache(); }
 
             if (_machinesCache === null) {
                 this.getList(function () {

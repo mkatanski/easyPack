@@ -60,6 +60,47 @@ module.exports = function (grunt) {
                     }
                 }
             }
+        },
+
+        clean: {
+            dist: {
+                files: [{
+                    dot: true,
+                    src: [
+                        appConfig.dist
+                    ]
+                }]
+            }
+        },
+
+        processhtml: {
+            dist: {
+                options: {
+                    process: true,
+                    data:    {
+                        message: 'This is production distribution'
+                    }
+                },
+                files:   {
+                    '<%= config.dist %>/index.html': ['<%= config.src %>/index.html']
+                }
+            }
+        },
+
+        uglify: {
+            dist: {
+                files: {
+                    '<%= config.dist %>/js/easyPack.min.js': ['<%= config.src %>/js/easyPack.js']
+                }
+            }
+        },
+
+        copy: {
+            dist: {
+                files: [
+                    {expand: true, cwd: '<%= config.src %>/', src: ['./**/*'], dest: '<%= config.dist %>/'}
+                ]
+            }
         }
 
     });
@@ -79,6 +120,13 @@ module.exports = function (grunt) {
         grunt.task.run(['serve:' + target]);
     });
 
+    grunt.registerTask('build', [
+        'clean',
+        'copy',
+        'processhtml:dist',
+        'uglify',
+        'connect:build'
+    ]);
 
     grunt.registerTask('default', [
         'serve'
