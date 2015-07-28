@@ -24,6 +24,8 @@
 
     <h1>easyPack Widget</h1>
 
+    <div id="widget" style="width: 300px"></div>
+
     <div id="mocha"></div>
     <div id="messages"></div>
     <div id="fixtures"></div>
@@ -33,6 +35,10 @@
     <script>mocha.setup('bdd')</script>
     <script src="easyPack_test.js"></script>
     <script>mocha.run();</script>
+
+    <script>
+        easyPack.ListWidget('widget');
+    </script>
 
 </body>
 </html>
